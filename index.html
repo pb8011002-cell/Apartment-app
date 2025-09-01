@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apartment Application</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Apartment Application</h1>
+    <form id="application-form">
+      <label>Full Name</label>
+      <input type="text" name="name" required />
+
+      <label>Email</label>
+      <input type="email" name="email" required />
+
+      <label>Phone</label>
+      <input type="tel" name="phone" required />
+
+      <label>Current Address</label>
+      <textarea name="address" required></textarea>
+
+      <label>Employer</label>
+      <input type="text" name="employer" required />
+
+      <label>Monthly Income</label>
+      <input type="number" name="income" required />
+
+      <label>Preferred Move-in Date</label>
+      <input type="date" name="movein" required />
+
+      <button type="submit">Submit & Pay Fee</button>
+    </form>
+  </div>
+
+  <script src="https://js.stripe.com/v3/"></script>
+  <script>
+    const form = document.getElementById('application-form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      const response = await fetch('/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const session = await response.json();
+
+      const stripe = Stripe("YOUR_STRIPE_PUBLISHABLE_KEY");
+      stripe.redirectToCheckout({ sessionId: session.id });
+    });
+  </script>
+</body>
+</html>
